@@ -41,7 +41,7 @@ void thread_d_fn(void *p1, void *p2, void *p3)
 	if(count++ >= 5) {
 	    count = 0;
 	    k_yield();
-	    //k_msleep(100);
+	    k_msleep(100);
 	} else {
 	    LOG_INF("T_COOP running");
 	}
