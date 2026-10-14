@@ -9,3 +9,5 @@ project_layout.txt
 
 # Vim temporary files
 *~
+
+.vscode
