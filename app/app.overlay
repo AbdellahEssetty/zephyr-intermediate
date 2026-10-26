@@ -1,0 +1,8 @@
+/ {
+	chosen {
+		zephyr,tracing,uart = &uart1;
+	};
+	aliases{
+		zephyr-tracing-uart = &uart0;
+	};
+};
