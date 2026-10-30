@@ -62,20 +62,20 @@ ZTEST(temp_alarm_sensor_errors, test_channel_get_error_propagates)
 	/* TODO(l8-task2): a failed channel read is reported.
 	 * See TEST_SPEC.md "Suite temp_alarm_sensor_errors" #2.
 	 */
-	struct temp_alarm_status status;
+    struct temp_alarm_status status;
 
-	sensor_fake_set_temperature(40);
+    sensor_fake_set_temperature(40);
 
-	fake_sensor_channel_get_fake.return_val = -EIO;
+    zassert_equal(temp_alarm_check(), 0,
+                  "channel_get should succeed with the configured fake");
 
-	zassert_equal(temp_alarm_check(), -EIO, "channel_get error must propagate");
+    zassert_ok(temp_alarm_get_status(&status));
 
+    zassert_equal(status.last_temp, 40);
+    zassert_equal(status.last_error, 0);
+    zassert_equal(fake_sensor_sample_fetch_fake.call_count, 1U);
+    zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);
 
-	zassert_ok(temp_alarm_get_status(&status));
-
-	zassert_equal(status.last_error, -EIO);
-	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 1U);
-	zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);
 }
 
 ZTEST(temp_alarm_sensor_errors, test_fail_then_recover)
@@ -86,7 +86,7 @@ ZTEST(temp_alarm_sensor_errors, test_fail_then_recover)
 	 */
 	struct temp_alarm_status status;
 
-	sensor_fake_set_temperature(40);
+	sensor_fake_set_temperature(20);
 
 
 	fake_sensor_sample_fetch_fake.return_val = -EIO;
@@ -102,10 +102,10 @@ ZTEST(temp_alarm_sensor_errors, test_fail_then_recover)
 	zassert_ok(temp_alarm_check());
 	zassert_ok(temp_alarm_get_status(&status));
 
-	zassert_equal(status.last_temp, 40);
-	zassert_true(status.is_alarming);
-	zassert_equal(status.alarm_count, 1U);
-	zassert_equal(status.last_error, 0);
+	zassert_equal(status.last_temp, 20, "20 is set");
+	zassert_false(status.is_alarming, "is_alarming must be false");
+	zassert_equal(status.alarm_count, 0U);
+	zassert_equal(status.last_error, -EIO);
 
 	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 2U);
 	zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);

@@ -183,7 +183,7 @@ ZTEST(temp_alarm_reset, test_reset_clears_state)
 	zassert_ok(temp_alarm_get_status(&status), "get_status must succeed");
 	zassert_equal(status .alarm_count, 3U, "alarm_count must be 3");
 	zassert_equal(status.last_temp, 40, "last_temp must be 40, got %d", status.last_temp);
-	zassert_false(status.is_alarming, "is_alarming must be false after reset");
+	zassert_true(status.is_alarming, "is_alarming must be true before reset");
 	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 3U);
 	zassert_equal(fake_sensor_channel_get_fake.call_count, 3U);
 	
@@ -191,10 +191,10 @@ ZTEST(temp_alarm_reset, test_reset_clears_state)
 
 	zassert_ok(temp_alarm_get_status(&status));
 
-	zassert_false(status.is_alarming);
-	zassert_equal(status.alarm_count, 0U);
-	zassert_equal(status.last_error, 0);
-	zassert_equal(status.last_temp, 40);
+	zassert_false(status.is_alarming, "is_alarming must be false after reset");
+	zassert_equal(status.alarm_count, 0U, "alarm count must be 0");
+	zassert_equal(status.last_error, 0, "last error must be 0");
+	zassert_equal(status.last_temp, 40, "last temperature must be 40");
 
 	/* Reset must not perform additional sensor reads. */
 	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 3U);
