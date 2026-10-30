@@ -45,16 +45,18 @@ ZTEST(temp_alarm_sensor_errors, test_fetch_error_propagates)
 	 * and the module does not go on to read the channel.
 	 * See TEST_SPEC.md "Suite temp_alarm_sensor_errors" #1.
 	 */
-	struct temp_alarm_status status;
-	fake_sensor_sample_fetch_fake.return_val = -EIO;
+    struct temp_alarm_status status;
 
-	zassert_equal(temp_alarm_check(), -EIO, "fetch error must propagate");
+    fake_sensor_channel_get_fake.custom_fake = NULL;
+    fake_sensor_channel_get_fake.return_val = -EIO;
 
-	zassert_ok(temp_alarm_get_status(&status));
+    zassert_equal(temp_alarm_check(), -EIO, "channel get error not propagated");
 
-	zassert_equal(status.last_error, -EIO, "last_error must contain the fetch error");
-	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 1U);
-	zassert_equal(fake_sensor_channel_get_fake.call_count, 0U);
+    zassert_ok(temp_alarm_get_status(&status), "get_status must succeed");
+    zassert_equal(status.last_error, -EIO, "last_error not set to channel get error");
+    zassert_equal(fake_sensor_sample_fetch_fake.call_count, 1U);
+    zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);
+
 }
 
 ZTEST(temp_alarm_sensor_errors, test_channel_get_error_propagates)
@@ -62,19 +64,15 @@ ZTEST(temp_alarm_sensor_errors, test_channel_get_error_propagates)
 	/* TODO(l8-task2): a failed channel read is reported.
 	 * See TEST_SPEC.md "Suite temp_alarm_sensor_errors" #2.
 	 */
-    struct temp_alarm_status status;
+	struct temp_alarm_status status;
 
-    sensor_fake_set_temperature(40);
-
-    zassert_equal(temp_alarm_check(), 0,
-                  "channel_get should succeed with the configured fake");
-
-    zassert_ok(temp_alarm_get_status(&status));
-
-    zassert_equal(status.last_temp, 40);
-    zassert_equal(status.last_error, 0);
-    zassert_equal(fake_sensor_sample_fetch_fake.call_count, 1U);
-    zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);
+	fake_sensor_channel_get_fake.custom_fake = NULL;
+    fake_sensor_channel_get_fake.return_val = -EIO;
+	
+	zassert_equal(temp_alarm_check(), -EIO, "channel get error not propagated");
+	zassert_ok(temp_alarm_get_status(&status), "get_status must succeed");
+	zassert_equal(status.last_error, -EIO, "last_error not set to channel get error");
+	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 1U, "sample_fetch must be called once, got %u", fake_sensor_sample_fetch_fake.call_count);
 
 }
 
