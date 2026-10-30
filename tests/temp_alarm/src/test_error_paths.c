@@ -75,7 +75,7 @@ ZTEST(temp_alarm_sensor_errors, test_channel_get_error_propagates)
 
 	zassert_equal(status.last_error, -EIO);
 	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 1U);
-	zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);ztest_test_skip();
+	zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);
 }
 
 ZTEST(temp_alarm_sensor_errors, test_fail_then_recover)
@@ -108,7 +108,7 @@ ZTEST(temp_alarm_sensor_errors, test_fail_then_recover)
 	zassert_equal(status.last_error, 0);
 
 	zassert_equal(fake_sensor_sample_fetch_fake.call_count, 2U);
-	zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);ztest_test_skip();
+	zassert_equal(fake_sensor_channel_get_fake.call_count, 1U);
 }
 
 /*
@@ -125,7 +125,7 @@ ZTEST(temp_alarm_invalid_input, test_get_status_null)
 	/* TODO(l8-task2): a NULL status pointer is rejected.
 	 * See TEST_SPEC.md "Suite temp_alarm_invalid_input" #1.
 	 */
-		zassert_equal(temp_alarm_get_status(NULL), -EINVAL, "NULL status pointer must be rejected");ztest_test_skip();
+		zassert_equal(temp_alarm_get_status(NULL), -EINVAL, "NULL status pointer must be rejected");
 }
 
 ZTEST(temp_alarm_invalid_input, test_init_without_device)
@@ -133,7 +133,7 @@ ZTEST(temp_alarm_invalid_input, test_init_without_device)
 	/* TODO(l8-task2): init without a sensor device is rejected.
 	 * See TEST_SPEC.md "Suite temp_alarm_invalid_input" #2.
 	 */
-	zassert_equal(temp_alarm_init(NULL, DEFAULT_THRESHOLD), -ENODEV, "NULL sensor device must be rejected");ztest_test_skip();
+	zassert_equal(temp_alarm_init(NULL, DEFAULT_THRESHOLD), -ENODEV, "NULL sensor device must be rejected");
 }
 
 ZTEST(temp_alarm_invalid_input, test_init_threshold_out_of_range)
@@ -143,7 +143,7 @@ ZTEST(temp_alarm_invalid_input, test_init_threshold_out_of_range)
 	 */
 	zassert_equal(temp_alarm_init(&fake_sensor_dev, -1), -EINVAL, "Negative threshold must be rejected");
 
-	zassert_equal(temp_alarm_init(&fake_sensor_dev, 101), -EINVAL, "Threshold above 100 must be rejected");ztest_test_skip();
+	zassert_equal(temp_alarm_init(&fake_sensor_dev, 101), -EINVAL, "Threshold above 100 must be rejected");
 }
 
 ZTEST(temp_alarm_invalid_input, test_set_threshold_out_of_range)
@@ -164,5 +164,5 @@ ZTEST(temp_alarm_invalid_input, test_set_threshold_out_of_range)
 
 	zassert_equal(status.last_temp, 40);
 	zassert_true(status.is_alarming);
-	zassert_equal(status.alarm_count, 1U);ztest_test_skip();
+	zassert_equal(status.alarm_count, 1U);
 }

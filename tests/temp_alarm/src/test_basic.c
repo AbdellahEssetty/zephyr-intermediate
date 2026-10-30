@@ -146,7 +146,7 @@ ZTEST(temp_alarm_threshold, test_new_threshold_clears_alarm)
 	zassert_true(status.is_alarming, "is_alarming must be true before threshold change");
 	zassert_equal(status.alarm_count, 1U, "alarm_count must be 1");
 
-	zassert_equal(temp_set_threshold(50), 0, "set_threshold must succeed");
+	zassert_equal(temp_alarm_set_threshold(50), 0, "set_threshold must succeed");
 	zassert_equal(temp_alarm_check(), 0, "check must succeed");
 	zassert_ok(temp_alarm_get_status(&status), "get_status must succeed");
 	zassert_equal(status.last_temp, 40, "last_temp must be 40, got %d", status.last_temp);
@@ -175,6 +175,7 @@ ZTEST(temp_alarm_reset, test_reset_clears_state)
 	 * reading).
 	 */
 	struct temp_alarm_status status;
+	sensor_fake_set_temperature(40);
 	zassert_equal(temp_alarm_check(), 0, "check must succeed");
 	zassert_equal(temp_alarm_check(), 0, "check must succeed");
 	zassert_equal(temp_alarm_check(), 0, "check must succeed");
